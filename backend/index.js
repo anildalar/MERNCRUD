@@ -35,6 +35,26 @@ app.post('/savename',(req,res)=>{
         res.status(200).send({msg:"Data Sent Succesfully"});
     });
 });
+
+app.post('/deletename',async (req,res)=>{
+    try {
+        console.log(req.body.nameId);
+        const deleteName=  await SaveContactModel.findOneAndDelete({ nameId: req.body.nameId });
+        if(deleteName){
+            res.status(200).json({
+                msg:"Name Deleted Successfully"
+            });
+        }else{
+            res.status(401).json({
+                msg:"Unable to Deleted Name"
+            });
+        }
+    } catch (error) {
+        res.status(400).send(error);
+    }
+    
+    
+});
  
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT} `);
