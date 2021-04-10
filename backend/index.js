@@ -9,6 +9,7 @@ app.use(express.json());
 
 
 const mongoose = require('mongoose');
+const e = require('express');
 mongoose.connect('mongodb+srv://okselluser:admin@123@oksell-cluster0.dsstc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const SaveContactModel = mongoose.model('SaveContact', { name: String, nameId:{ type:String,unique:true} });
@@ -18,6 +19,17 @@ app.get('/', function (req, res) {
 });
 
 
+app.post('/getname',(req,res)=>{
+    SaveContactModel.findOne({nameId: req.body.nameId }).exec((err,data)=>{
+        //console.log(data); //
+        if(data){
+            res.status(200).send(data);
+        }else{
+            res.status(404).send({msg:"data not found"});
+        }
+        
+    });
+});
 app.get('/getname',function(req,res){
     SaveContactModel.find({}).exec((err,data)=>{
         console.log(data);
@@ -35,7 +47,17 @@ app.post('/savename',(req,res)=>{
         res.status(200).send({msg:"Data Sent Succesfully"});
     });
 });
-
+app.post('/updatename',(req,res)=>{
+    // model.findOneAndUpdate(conditions, update, callback)
+    SaveContactModel.findOneAndUpdate({nameId:req.body.nameId},{
+        name:req.body.name
+    },(err)=>{
+        if(err){
+            res.status(401).send(err);
+        }
+        res.status(200).send({msg:"data updated succesfully"});
+    });
+});
 app.post('/deletename',async (req,res)=>{
     try {
         console.log(req.body.nameId);
